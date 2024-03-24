@@ -48,8 +48,7 @@ func Publisher() {
 		text := name + "," + password + "," + strconv.Itoa(age) + "," + strconv.Itoa(hours_spent)
 		token := client.Publish("test/topic", 1, false, text)
 		token.Wait()
-		Writer("./logs/publisher_logs.txt", text + "\n")
+		Writer("./logs/publisher_logs.txt", text+"\n")
 		time.Sleep(2 * time.Second)
-	} 
+	}
 }
-

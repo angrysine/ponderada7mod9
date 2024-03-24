@@ -2,42 +2,44 @@ package main
 
 import (
 	"fmt"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	godotenv "github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
 	"os"
 	"strconv"
 	"strings"
-	"go.mongodb.org/mongo-driver/mongo"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-	godotenv "github.com/joho/godotenv"
 )
+
 type Data struct {
-	name string
-	password string
-	age int
+	name        string
+	password    string
+	age         int
 	hours_spent int
 }
-var data *Data;
+
+var data *Data
 
 var db *mongo.Collection
 
 var messagePubHandlerSub mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	var text = fmt.Sprintf("Recebido: %s do tópico: %s com QoS: %d\n", msg.Payload(), msg.Topic(), msg.Qos())
-	Writer("./logs/subscriber_logs.txt",  text+ "\n")
+	Writer("./logs/subscriber_logs.txt", text+"\n")
 	result := strings.Split(string(msg.Payload()), ",")
-	age,_ := strconv.Atoi(result[2])
+	age, _ := strconv.Atoi(result[2])
 	hours_spent_value, _ := strconv.Atoi(result[3])
 	data = &Data{name: result[0], password: result[1], age: age, hours_spent: hours_spent_value}
 	Insert(db, *data)
 	fmt.Printf("name: "+data.name, "password: "+data.password, "age: "+strconv.Itoa(data.age), "hours_spent: "+strconv.Itoa(data.hours_spent))
-	Writer("./logs/subscriber_logs.txt", "name: "+data.name + " password: "+data.password + " age: "+strconv.Itoa(data.age) + " hours_spent: "+strconv.Itoa(data.hours_spent) + "\n")
+	Writer("./logs/subscriber_logs.txt", "name: "+data.name+" password: "+data.password+" age: "+strconv.Itoa(data.age)+" hours_spent: "+strconv.Itoa(data.hours_spent)+"\n")
 }
 
 var connectHandlerSub mqtt.OnConnectHandler = func(client mqtt.Client) {
-	Writer("subscriber_logs.txt", "connected" + "\n")
+	Writer("subscriber_logs.txt", "connected"+"\n")
 }
 
 var connectLostHandlerSub mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
 	var text = fmt.Sprintf("Connection lost: %v", err)
-	Writer("subscriber_logs.txt",  text+ "\n")
+	Writer("subscriber_logs.txt", text+"\n")
 }
 
 func Subscriber(dbPointer *mongo.Collection) {
@@ -71,5 +73,3 @@ func Subscriber(dbPointer *mongo.Collection) {
 		return
 	}
 }
-
-
