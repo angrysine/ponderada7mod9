@@ -48,6 +48,8 @@ func Select(collection *mongo.Collection, filter bson.D) {
 func Insert(collection *mongo.Collection, data Data) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	fmt.Printf("data %v", data)
+	fmt.Printf("collection %v", collection)
 	res, err := collection.InsertOne(ctx, bson.D{{Key: "name", Value: data.name}, {Key: "password", Value: data.password}, {Key: "age", Value: data.age}, {Key: "hours_spent", Value: data.hours_spent}})
 	fmt.Printf("insert item with id %v", res.InsertedID)
 	throw(err)

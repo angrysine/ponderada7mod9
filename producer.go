@@ -16,13 +16,11 @@ func Producer() *kafka.Producer {
 
 func GenerateProducer() {
 	// Configurações do produtor
-	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost:29092,localhost:39092",
-		"client.id":         "go-producer",
-	})
+	conf := ReadConfig()
+	producer, err := kafka.NewProducer(&conf)
 	if err != nil {
 		panic(err)
-	}
+	}	
 	// defer producer.Close()
 
 	ProducerPointer = producer

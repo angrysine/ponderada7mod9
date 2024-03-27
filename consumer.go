@@ -24,11 +24,8 @@ func Consumer(collectionPointer *mongo.Collection) *kafka.Consumer {
 
 func GenerateConsumer() {
 	// Configurações do consumidor
-	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "localhost:29092,localhost:39092",
-		"group.id":          "go-consumer-group",
-		"auto.offset.reset": "earliest",
-	})
+	conf := ReadConfig()
+	consumer, err := kafka.NewConsumer(&conf)
 	if err != nil {
 		panic(err)
 	}
@@ -54,10 +51,11 @@ func Subscribe(consumer *kafka.Consumer,topic string) {
 			age, _ := strconv.Atoi(result[2])
 			hours_spent_value, _ := strconv.Atoi(result[3])
 			data = &Data{name: result[0], password: result[1], age: age, hours_spent: hours_spent_value}
-			fmt.Println("aqui5")
-			Insert(db, *data)
-			Writer("./logs/consumer_logs.txt", "name: "+data.name+" password: "+data.password+" age: "+strconv.Itoa(data.age)+" hours_spent: "+strconv.Itoa(data.hours_spent)+"\n")
+			fmt.Printf("aqui5 %v", data.age)
+			Insert(CollectionPointer, *data)
 			fmt.Println("aqui6")
+			Writer("./logs/consumer_logs.txt", "name: "+data.name+" password: "+data.password+" age: "+strconv.Itoa(data.age)+" hours_spent: "+strconv.Itoa(data.hours_spent)+"\n")
+
 		} else {
 			fmt.Printf("Consumer error: %v (%v)\n", err, msg)
 			break
