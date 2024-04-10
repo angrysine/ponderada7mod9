@@ -28,7 +28,7 @@ func Mongo(password string) *mongo.Client {
 	return ClientPointer
 }
 
-func Select(collection *mongo.Collection, filter bson.D) {
+func Select(collection *mongo.Collection, filter bson.D) Data {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cursor, err := collection.Find(ctx, filter)
@@ -42,7 +42,7 @@ func Select(collection *mongo.Collection, filter bson.D) {
 	for _, result := range results {
 		fmt.Println("name: "+result.name, "password: "+result.password, "age: "+strconv.Itoa(result.age), "hours_spent: "+strconv.Itoa(result.hours_spent))
 	}
-
+	return results[0]
 }
 
 func Insert(collection *mongo.Collection, data Data) {
