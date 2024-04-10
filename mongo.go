@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,12 +13,12 @@ import (
 
 var ClientPointer *mongo.Client
 
-func Mongo(password string) *mongo.Client {
+func Mongo(connectionString string) *mongo.Client {
 	if ClientPointer == nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://albertomiranda:"+password+"@betinhodb.xeezpin.mongodb.net/?retryWrites=true&w=majority&appName=betinhoDb"))
+		client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectionString))
 
 		throw(err)
 		TestConection(client, ctx)
@@ -36,12 +35,11 @@ func Select(collection *mongo.Collection, filter bson.D) Data {
 		panic(err)
 	}
 	var results []Data
-	if err = cursor.All(ctx, results); err != nil {
+	if err = cursor.All(ctx, &results); err != nil {
 		panic(err)
 	}
-	for _, result := range results {
-		fmt.Println("name: "+result.name, "password: "+result.password, "age: "+strconv.Itoa(result.age), "hours_spent: "+strconv.Itoa(result.hours_spent))
-	}
+	fmt.Printf("\nresults %v", results)
+
 	return results[0]
 }
 

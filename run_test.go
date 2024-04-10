@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -15,12 +16,13 @@ func TestPipeline(t *testing.T) {
 	}
 	message := PublisherOne()
 	
-	mongo := Mongo(os.Getenv("mongopassword"))
+	mongo := Mongo(os.Getenv("mongoConnection"))
 
-	collection := GetCollection("test", "test", mongo)
+	collection := GetCollection("ponderada", "users", mongo)
 
+	// time.Sleep(5 * time.Second)
 	filter := bson.D{{Key: "name", Value: message.name}, {Key: "password", Value: message.password}, {Key: "age", Value: message.age}, {Key: "hours_spent", Value: message.hours_spent}}
-
+	fmt.Printf("filter %v", filter)
 	result := Select(collection, filter)
 
 	if result.name != message.name {
